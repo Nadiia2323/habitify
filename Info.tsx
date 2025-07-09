@@ -3,10 +3,10 @@ import React from "react";
 export default function Info() {
   return (
     <>
-      <div>
+      <div className="m-10">
         <p>Why Habitify?</p>
       </div>
-      <div>
+      <div className="m-10">
         <ul>
           <li>Simplicity</li>
           <li>motivation</li>
