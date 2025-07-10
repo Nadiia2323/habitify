@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 
 export default function Header() {
   return (
@@ -14,9 +15,15 @@ export default function Header() {
             />
           </div>
           <nav className="pt-10">
-            <a className="pr-8">Home</a>
-            <a className="pr-8">About</a>
-            <a className="pr-8">Login</a>
+            <Link href="/" className="pr-8">
+              Home
+            </Link>
+            <Link href="/about" className="pr-8">
+              About
+            </Link>
+            <Link href="/login" className="pr-8">
+              Login
+            </Link>
           </nav>
         </div>
       </header>
