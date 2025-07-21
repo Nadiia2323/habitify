@@ -19,7 +19,6 @@ export default function Footer() {
             <a href="#" className="hover:underline">
               GitHub
             </a>
-            {/* <div></div> */}
           </div>
         </div>
       </footer>

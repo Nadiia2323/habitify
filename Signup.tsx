@@ -1,6 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
+type PersonalData = {
+  email: string;
+  password: string;
+  repeatPass: string;
+};
+type Errors = {
+  email: string;
+  password: string;
+  repeatPass: string;
+};
 
 export default function Signup() {
+  const [personalData, setPersonalData] = useState<PersonalData>({
+    email: "",
+    password: "",
+    repeatPass: "",
+  });
+
+  const [errors, setErrors] = useState<Errors>({
+    email: "",
+    password: "",
+    repeatPass: "",
+  });
+
+  function handlerChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+
+    if (
+      name === "email" &&
+      value &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+    ) {
+      setErrors((prev) => ({ ...prev, email: "invalid email" }));
+    } else {
+      setErrors((prev) => ({ ...prev, email: "" }));
+    }
+
+    if (name === "password" && value.length < 8) {
+      setErrors((prev) => ({ ...prev, password: "too short" }));
+    } else {
+      setErrors((prev) => ({ ...prev, password: "" }));
+    }
+    if (name === "repeat-password") {
+    }
+    console.log("errors :>> ", errors);
+  }
+
   return (
     <form className="max-w-sm space-y-4">
       <h5 className="text-xl font-medium text-gray-900 dark:text-white">
@@ -8,7 +53,9 @@ export default function Signup() {
       </h5>
       <div className="relative">
         <input
-          type="text"
+          onChange={handlerChange}
+          name="email"
+          type="email"
           id="email"
           className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
@@ -23,7 +70,9 @@ export default function Signup() {
       </div>
       <div className="relative">
         <input
-          type="text"
+          onChange={handlerChange}
+          name="password"
+          type="password"
           id="password"
           className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
@@ -38,7 +87,9 @@ export default function Signup() {
       </div>
       <div className="relative">
         <input
-          type="text"
+          onChange={handlerChange}
+          name="repeat-password"
+          type="repeat-password"
           id="repeat-password"
           className="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
