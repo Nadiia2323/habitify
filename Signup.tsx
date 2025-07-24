@@ -16,6 +16,7 @@ export default function Signup() {
     password: "",
     repeatPass: "",
   });
+  console.log("personalData :>> ", personalData);
 
   const [errors, setErrors] = useState<Errors>({
     email: "",
