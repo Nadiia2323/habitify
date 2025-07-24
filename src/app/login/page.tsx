@@ -2,84 +2,59 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Signup from "../../../components/Signup";
+import { useForm } from "react-hook-form";
 
-type PersonalData = {
-  email: string;
-  password: string;
-};
-type Errors = {
+type FormData = {
   email: string;
   password: string;
 };
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [isPersonalData, setIsPersonalData] = useState<PersonalData>({
-    email: "",
-    password: "",
-  });
-  const [errors, setErrors] = useState<Errors>({
-    email: "",
-    password: "",
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
 
   function handleToggle() {
     setIsSignUp((prev) => !prev);
   }
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setIsPersonalData((prev) => ({ ...prev, [name]: value }));
-    if (
-      name === "email" &&
-      value &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-    ) {
-      setErrors((prev) => ({ ...prev, email: "invalid email" }));
-    } else {
-      setErrors((prev) => ({ ...prev, email: "" }));
-    }
-    if (name === "password" && value.length < 8) {
-      setErrors((prev) => ({ ...prev, password: "password is too short" }));
-    } else {
-      setErrors((prev) => ({ ...prev, password: "" }));
-    }
-  }
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (errors.email || errors.password) {
-      return;
-    }
-    console.log("isPersonalData :>> ", isPersonalData);
-  }
   return (
     <>
       <div className="flex flex-row justify-around m-10">
-        <div className="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
           {isSignUp ? (
             <Signup />
           ) : (
             <form
-              onSubmit={handleSubmit}
+              onSubmit={handleSubmit((data) => {
+                console.log("data :>> ", data);
+              })}
               className="flex flex-col items-center space-y-4"
             >
               <h5 className="text-xl font-medium text-gray-900 dark:text-white">
                 Log in
               </h5>
 
-              <div className="relative w-full w-max-sm">
+              <div className="relative w-full ">
                 <input
                   type="email"
-                  name="email"
-                  value={isPersonalData.email}
+                  id="email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Invalid email",
+                    },
+                  })}
                   className={
                     errors.email
                       ? "block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 appearance-none dark:text-white dark:border-red-500 border-red-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
                       : "block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   }
                   placeholder=" "
-                  onChange={handleChange}
                 />
                 <label
                   htmlFor="email"
@@ -96,24 +71,27 @@ export default function Login() {
                     id="outlined_error_help"
                     className="mt-2 text-xs text-red-600 dark:text-red-400"
                   >
-                    <span className="font-medium">{errors.email}</span>
+                    <span className="font-medium">{errors.email.message}</span>
                   </p>
                 )}
               </div>
-              <div></div>
-
-              <div className="relative w-full w-max-sm">
+              <div className="relative w-full">
                 <input
+                  id="password"
                   type="password"
-                  name="password"
-                  value={isPersonalData.password}
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 8,
+                      message: "Password must be at least 8 characters",
+                    },
+                  })}
                   className={
                     errors.password
                       ? "block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 appearance-none dark:text-white dark:border-red-500 border-red-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
                       : "block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   }
                   placeholder=" "
-                  onChange={handleChange}
                 />
                 <label
                   htmlFor="password"
@@ -130,7 +108,9 @@ export default function Login() {
                     id="outlined_error_help"
                     className="mt-2 text-xs text-red-600 dark:text-red-400"
                   >
-                    <span className="font-medium">{errors.password}</span>
+                    <span className="font-medium">
+                      {errors.password.message}
+                    </span>
                   </p>
                 )}
               </div>
@@ -171,13 +151,13 @@ export default function Login() {
             </form>
           )}
 
-          <a
+          <button
+            type="button"
             onClick={handleToggle}
-            href="#"
             className="text-blue-700 hover:underline dark:text-blue-500"
           >
             {isSignUp ? "Log in" : "Sign up"}
-          </a>
+          </button>
         </div>
         <div className="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
           <a href="#">
@@ -188,7 +168,7 @@ export default function Login() {
           <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
             I built Habitify to test a simple idea — can daily action for 24
             days really form a habit? This app helps busy people build positive
-            habits with reminders, tracking, and simple motivation. I'm a solo
+            habits with reminders, tracking, and simple motivation.I am a solo
             developer, and this is just the beginning.
           </p>
           <Link
