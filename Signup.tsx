@@ -1,4 +1,8 @@
 import { useForm } from "react-hook-form";
+import { EyeSlashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+
 type PersonalData = {
   email: string;
   password: string;
@@ -7,6 +11,7 @@ type PersonalData = {
 };
 
 export default function Signup() {
+  const [isVisible, setIsVisible] = useState(false);
   const {
     register,
     handleSubmit,
@@ -22,13 +27,17 @@ export default function Signup() {
 
   const getInputClass = (hasError: boolean) => {
     return hasError
-      ? "block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 appearance-none dark:text-white dark:border-red-500 border-red-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
-      : "block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer";
+      ? " block pr-10 px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 appearance-none dark:text-white dark:border-red-500 border-red-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
+      : " block pr-10 px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer";
   };
   const getLableClass = (hasError: boolean) => {
     return hasError
       ? "absolute text-sm text-red-600 dark:text-red-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 start-1 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
       : "absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1";
+  };
+
+  const handleToggle = () => {
+    setIsVisible((prev) => !prev);
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm space-y-4">
@@ -74,12 +83,24 @@ export default function Signup() {
               message: "Must include uppercase, number & special char",
             },
           })}
-          type="password"
+          type={isVisible ? "text" : "password"}
           id="password"
           className={getInputClass(!!errors.password)}
           placeholder=" "
           required
         />
+
+        <button
+          type="button"
+          onClick={handleToggle}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        >
+          {isVisible ? (
+            <EyeIcon className="h-4 w-4"></EyeIcon>
+          ) : (
+            <EyeSlashIcon className="h-4 w-4"></EyeSlashIcon>
+          )}
+        </button>
         <label htmlFor="password" className={getLableClass(!!errors.password)}>
           Password
         </label>
