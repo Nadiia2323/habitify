@@ -23,14 +23,15 @@ export default function Signup() {
   const onSubmit = (data: PersonalData) => {
     console.log("data :>> ", data);
     reset();
+    setIsVisible(false);
   };
 
   const getInputClass = (hasError: boolean) => {
     return hasError
-      ? " block pr-10 px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 appearance-none dark:text-white dark:border-red-500 border-red-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
-      : " block pr-10 px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer";
+      ? " block px-2.5 pr-10  pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border appearance-none dark:text-white dark:border-red-500 border-red-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
+      : " block px-2.5 pr-10  pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer";
   };
-  const getLableClass = (hasError: boolean) => {
+  const getLabelClass = (hasError: boolean) => {
     return hasError
       ? "absolute text-sm text-red-600 dark:text-red-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 start-1 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
       : "absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1";
@@ -39,8 +40,13 @@ export default function Signup() {
   const handleToggle = () => {
     setIsVisible((prev) => !prev);
   };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm space-y-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="max-w-sm space-y-4"
+      noValidate
+    >
       <h5 className="text-xl font-medium text-gray-900 dark:text-white">
         Sign up
       </h5>
@@ -57,15 +63,13 @@ export default function Signup() {
           id="email"
           className={getInputClass(!!errors.email)}
           placeholder=" "
+          autoComplete="email"
         />
-        <label htmlFor="email" className={getLableClass(!!errors.email)}>
+        <label htmlFor="email" className={getLabelClass(!!errors.email)}>
           Email
         </label>
         {errors.email && (
-          <p
-            id="outlined_error_help"
-            className="mt-2 text-xs text-red-600 dark:text-red-400"
-          >
+          <p className="mt-2 text-xs text-red-600 dark:text-red-400">
             <span className="font-medium">{errors.email.message}</span>
           </p>
         )}
@@ -87,10 +91,11 @@ export default function Signup() {
           id="password"
           className={getInputClass(!!errors.password)}
           placeholder=" "
-          required
+          autoComplete="new-password"
         />
 
         <button
+          onMouseDown={(e) => e.preventDefault()}
           type="button"
           onClick={handleToggle}
           className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
@@ -101,50 +106,56 @@ export default function Signup() {
             <EyeSlashIcon className="h-4 w-4"></EyeSlashIcon>
           )}
         </button>
-        <label htmlFor="password" className={getLableClass(!!errors.password)}>
+        <label htmlFor="password" className={getLabelClass(!!errors.password)}>
           Password
         </label>
-        {errors.password && (
-          <p
-            id="outlined_error_help"
-            className="mt-2 text-xs text-red-600 dark:text-red-400"
-          >
-            <span className="font-medium">{errors.password.message}</span>
-          </p>
-        )}
       </div>
+      {errors.password && (
+        <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+          <span className="font-medium">{errors.password.message}</span>
+        </p>
+      )}
       <div className="relative">
         <input
           {...register("repeatPass", {
             required: "Please repeat the password",
             validate: (value) => value === password || "passwords do not match",
           })}
-          type="password"
+          type={isVisible ? "text" : "password"}
           id="repeatPass"
           className={getInputClass(!!errors.repeatPass)}
           placeholder=" "
+          autoComplete="new-password"
         />
         <label
           htmlFor="repeatPass"
-          className={getLableClass(!!errors.repeatPass)}
+          className={getLabelClass(!!errors.repeatPass)}
         >
           Repeat password
         </label>
-        {errors.repeatPass && (
-          <p
-            id="outlined_error_help"
-            className="mt-2 text-xs text-red-600 dark:text-red-400"
-          >
-            <span className="font-medium">{errors.repeatPass.message}</span>
-          </p>
-        )}
+        <button
+          onMouseDown={(e) => e.preventDefault()}
+          type="button"
+          onClick={handleToggle}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        >
+          {isVisible ? (
+            <EyeIcon className="h-4 w-4"></EyeIcon>
+          ) : (
+            <EyeSlashIcon className="h-4 w-4"></EyeSlashIcon>
+          )}
+        </button>
       </div>
+      {errors.repeatPass && (
+        <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+          <span className="font-medium">{errors.repeatPass.message}</span>
+        </p>
+      )}
       <div className="flex items-start mb-5">
         <div className="flex items-center h-5">
           <input
             id="terms"
             type="checkbox"
-            value=""
             className="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
             {...register("terms", { required: "You must accept all terms" })}
           />
