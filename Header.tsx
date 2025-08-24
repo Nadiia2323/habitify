@@ -9,7 +9,7 @@ export default function Header() {
         <nav>
           <div className="flex  justify-between max-w-screen-xl mx-auto p-4">
             <img
-              src="https://res.cloudinary.com/dqgvmwnpl/image/upload/v1752593294/Growbit/ChatGPT_Image_15_%D0%B8%D1%8E%D0%BB._2025_%D0%B3._17_27_44_epeova.png"
+ src="https://res.cloudinary.com/dqgvmwnpl/image/upload/v1752593294/Growbit/ChatGPT_Image_15_%D0%B8%D1%8E%D0%BB._2025_%D0%B3._17_27_44_epeova.png"
               className="h-30 w-30"
               alt="Growbit logo"
             />
