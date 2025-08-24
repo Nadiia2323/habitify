@@ -3,14 +3,17 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Signup from "../../../components/Signup";
 import { useForm } from "react-hook-form";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 type FormData = {
   email: string;
   password: string;
+  remember: boolean;
 };
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const {
     register,
     handleSubmit,
@@ -20,6 +23,10 @@ export default function Login() {
   function handleToggle() {
     setIsSignUp((prev) => !prev);
   }
+
+  const handleVisibility = () => {
+    setIsVisible((prev) => !prev);
+  };
 
   return (
     <>
@@ -33,6 +40,7 @@ export default function Login() {
                 console.log("data :>> ", data);
               })}
               className="flex flex-col items-center space-y-4"
+              noValidate
             >
               <h5 className="text-xl font-medium text-gray-900 dark:text-white">
                 Log in
@@ -40,6 +48,7 @@ export default function Login() {
 
               <div className="relative w-full ">
                 <input
+                  autoComplete="username"
                   type="email"
                   id="email"
                   {...register("email", {
@@ -66,19 +75,17 @@ export default function Login() {
                 >
                   Email
                 </label>
-                {errors.email && (
-                  <p
-                    id="outlined_error_help"
-                    className="mt-2 text-xs text-red-600 dark:text-red-400"
-                  >
-                    <span className="font-medium">{errors.email.message}</span>
-                  </p>
-                )}
               </div>
+              {errors.email && (
+                <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                  <span className="font-medium">{errors.email.message}</span>
+                </p>
+              )}
               <div className="relative w-full">
                 <input
                   id="password"
-                  type="password"
+                  autoComplete="current-password"
+                  type={isVisible ? "text" : "password"}
                   {...register("password", {
                     required: "Password is required",
                     minLength: {
@@ -88,8 +95,8 @@ export default function Login() {
                   })}
                   className={
                     errors.password
-                      ? "block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 appearance-none dark:text-white dark:border-red-500 border-red-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
-                      : "block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                      ? "block px-2.5 pr-10 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border appearance-none dark:text-white dark:border-red-500 border-red-600 dark:focus:border-red-500 focus:outline-none focus:ring-0 focus:border-red-600 peer"
+                      : "block px-2.5 pr-10 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   }
                   placeholder=" "
                 />
@@ -103,17 +110,24 @@ export default function Login() {
                 >
                   Password
                 </label>
-                {errors.password && (
-                  <p
-                    id="outlined_error_help"
-                    className="mt-2 text-xs text-red-600 dark:text-red-400"
-                  >
-                    <span className="font-medium">
-                      {errors.password.message}
-                    </span>
-                  </p>
-                )}
+                <button
+                  onMouseDown={(e) => e.preventDefault()}
+                  className="absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"
+                  type="button"
+                  onClick={handleVisibility}
+                >
+                  {isVisible ? (
+                    <EyeIcon className="h-4 w-4"></EyeIcon>
+                  ) : (
+                    <EyeSlashIcon className="h-4 w-4"></EyeSlashIcon>
+                  )}
+                </button>
               </div>
+              {errors.password && (
+                <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                  <span className="font-medium">{errors.password.message}</span>
+                </p>
+              )}
               <button
                 type="submit"
                 className="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 "
@@ -124,11 +138,10 @@ export default function Login() {
                 <div className="flex items-start">
                   <div className="flex items-center h-5">
                     <input
+                      {...register("remember")}
                       id="remember"
                       type="checkbox"
-                      value=""
                       className="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
-                      required
                     />
                   </div>
                   <label
