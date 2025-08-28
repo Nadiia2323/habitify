@@ -20,10 +20,28 @@ export default function Signup() {
     reset,
   } = useForm<PersonalData>({ mode: "onTouched" });
   const password = watch("password");
-  const onSubmit = (data: PersonalData) => {
-    console.log("data :>> ", data);
-    reset();
-    setIsVisible(false);
+  const onSubmit = async (data: PersonalData) => {
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+      console.log("Server response :>> ", result);
+
+      if (res.ok) {
+        alert("User registered successfully ✅");
+        reset();
+        setIsVisible(false);
+      } else {
+        alert(result.message || "Something went wrong ❌");
+      }
+    } catch (err) {
+      console.error("error :>> ", err);
+      alert("Failed to connect to server 🚨");
+    }
   };
 
   const getInputClass = (hasError: boolean) => {
