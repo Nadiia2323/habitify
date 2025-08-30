@@ -22,10 +22,14 @@ export default function Signup() {
   const password = watch("password");
   const onSubmit = async (data: PersonalData) => {
     try {
+      const normalizedEmail = data.email.trim().toLowerCase();
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: data.email, password: data.password }),
+        body: JSON.stringify({
+          email: normalizedEmail,
+          password: data.password,
+        }),
       });
 
       const result = await res.json();
