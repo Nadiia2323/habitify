@@ -18,12 +18,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(500).json({error:"JWT_SECRET is not set"})
         
     }
-    const { email, password } = req.body;
+    const { email, password } = req.body ?? {};
+    
     if (!email || !password) {
         return res.status(400).json({error: "Email and password are required"})
     }
+    const normalizedEmail= email.trim().toLowerCase()
     try {
-        const user = await prisma.user.findUnique({ where: { email } });
+        const user = await prisma.user.findUnique({ where: { email:normalizedEmail } });
         if (!user) {
         return res.status(400).json({error:"Invalid credentials"})    
         }
@@ -32,11 +34,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(400).json({error:"Invalid credentials"})
         }
         const token = jwt.sign({
-            userId: user.id,email: user.email
+            userId: user.id,email: normalizedEmail
         }, JWT_SECRET, { expiresIn: "1h" })
-        res.status(200).json({message:"login successful", token})
-    } catch (error) {
-        console.log('error :>> ', error);
-        res.status(500).json({error:"Something went wrong"})
-    }
+        const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+    res.setHeader(
+      "Set-Cookie",
+      `token=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=Lax${secure}`
+    );
+     res.status(200).json({ message: "Login successful" });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 }

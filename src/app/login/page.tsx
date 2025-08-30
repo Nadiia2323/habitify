@@ -20,6 +20,30 @@ export default function Login() {
     formState: { errors },
   } = useForm<FormData>();
 
+  const onSubmit = async (data: FormData) => {
+    try {
+      const normalizedEmail = data.email.trim().toLowerCase();
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          password: data.password,
+        }),
+      });
+
+      const result = await res.json();
+      console.log("serverLoginREsult :>> ", result);
+      if (res.ok) {
+        alert("Login successful ✅");
+      } else {
+        alert(result.error || "Invalid credentials ❌");
+      }
+    } catch (error) {
+      console.log("error :>> ", error);
+    }
+  };
+
   function handleToggle() {
     setIsSignUp((prev) => !prev);
   }
@@ -36,9 +60,7 @@ export default function Login() {
             <Signup />
           ) : (
             <form
-              onSubmit={handleSubmit((data) => {
-                console.log("data :>> ", data);
-              })}
+              onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col items-center space-y-4"
               noValidate
             >
