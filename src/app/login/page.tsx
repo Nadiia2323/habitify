@@ -1,9 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Signup from "../../../components/Signup";
 import { useForm } from "react-hook-form";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 
 type FormData = {
   email: string;
@@ -12,6 +14,8 @@ type FormData = {
 };
 
 export default function Login() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [isSignUp, setIsSignUp] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const {
@@ -36,6 +40,7 @@ export default function Login() {
       console.log("serverLoginREsult :>> ", result);
       if (res.ok) {
         alert("Login successful ✅");
+        router.push("/dashboard");
       } else {
         alert(result.error || "Invalid credentials ❌");
       }
@@ -51,6 +56,11 @@ export default function Login() {
   const handleVisibility = () => {
     setIsVisible((prev) => !prev);
   };
+  useEffect(() => {
+    if (session?.user) {
+      router.push("/dashboard"); // редирект если пользователь залогинен
+    }
+  }, [session, router]);
 
   return (
     <>
@@ -185,6 +195,14 @@ export default function Login() {
               </div>
             </form>
           )}
+          <div className="flex flex-col items-center justify-center gap-4 mt-6">
+            <button
+              onClick={() => signIn("google")}
+              className="bg-red-500 text-white px-4 py-2 rounded"
+            >
+              Login with Google
+            </button>
+          </div>
 
           <button
             type="button"
