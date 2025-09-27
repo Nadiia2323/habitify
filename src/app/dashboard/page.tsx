@@ -1,64 +1,35 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { authOptions } from "../../../src/lib/auth";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-type User = {
-  id: number;
-  email: string;
-  createdAt: number;
-};
+export default async function Dashboard() {
+  // 🔑 Проверяем сессию на сервере
+  const session = await getServerSession(authOptions);
 
-export default function Dashboard() {
-  const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-
-  const handleLogout = async () => {
-    try {
-      const res = await fetch("/api/logout", { method: "POST" });
-      if (res.ok) {
-        setCurrentUser(null);
-        router.push("/login");
-      } else {
-        console.log("Logout failed");
-      }
-    } catch (error) {
-      console.log("Logout error:", error);
-    }
-  };
-
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const res = await fetch("/api/me");
-        if (!res.ok) {
-          setCurrentUser(null);
-          router.push("/login");
-          return;
-        }
-        const data = await res.json();
-        setCurrentUser(data.user);
-      } catch (error) {
-        console.log("Fetch error:", error);
-        router.push("/login");
-      }
-    };
-    getUser();
-  }, [router]);
-
-  if (currentUser === null) {
-    return <p>Loading....</p>;
+  if (!session) {
+    redirect("/login"); // если не авторизован → редиректим
   }
 
   return (
-    <div>
-      <p>Hello my friend</p>
-      <p>{currentUser.email}</p>
-      <button
-        onClick={handleLogout}
-        className="bg-red-500 text-white px-4 py-2 rounded"
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Welcome, {session.user?.name}</h1>
+      <p className="text-gray-700">{session.user?.email}</p>
+
+      {/* Logout через form (лучший способ в App Router) */}
+      <form
+        action={async () => {
+          "use server";
+          const { signOut } = await import("next-auth/react");
+          await signOut({ callbackUrl: "/login" });
+        }}
       >
-        Logout
-      </button>
+        <button
+          type="submit"
+          className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Logout
+        </button>
+      </form>
     </div>
   );
 }

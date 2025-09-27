@@ -29,6 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!user) {
         return res.status(400).json({error:"Invalid credentials"})    
         }
+         if (!user.password) {
+      return res.status(400).json({ error: "This account uses Google login. Please sign in with Google." });
+    }
         const isValid = await bcrypt.compare(password, user.password)
         if (!isValid) {
             return res.status(400).json({error:"Invalid credentials"})
