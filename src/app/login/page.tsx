@@ -26,36 +26,26 @@ export default function Login() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>();
 
-  // 🔑 кастомный логин (email/пароль)
   const onSubmit = async (data: FormData) => {
     setServerError(null);
-    try {
-      const normalizedEmail = data.email.trim().toLowerCase();
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: normalizedEmail,
-          password: data.password,
-        }),
-      });
 
-      const result = await res.json();
-      if (!res.ok) {
-        setServerError(result.error || "Invalid credentials ❌");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      setServerError("Something went wrong. Try again later.");
+    const res = await signIn("credentials", {
+      redirect: false,
+      email: data.email.trim().toLowerCase(),
+      password: data.password,
+    });
+
+    if (res?.error) {
+      setServerError("Invalid email or password ❌");
+    } else {
+      router.push("/dashboard");
     }
   };
 
-  // 🔑 Google OAuth
   const handleGoogleLogin = () => {
     signIn("google", { callbackUrl: "/dashboard" });
   };
 
-  // 🔑 единая точка редиректа
   useEffect(() => {
     if (session?.user) {
       router.replace("/dashboard");
@@ -157,7 +147,7 @@ export default function Login() {
               )}
             </div>
 
-            {/* Error message */}
+            {/* Error */}
             {serverError && (
               <p className="text-sm text-red-600">{serverError}</p>
             )}
